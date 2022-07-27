@@ -7,8 +7,8 @@ export default function Home() {
     <div class="p-4 mx-auto max-w-screen-md">
       <img
         src="/logo.svg"
-        height="100px"
         alt="the fresh logo: a sliced lemon dripping with juice"
+        class="h-16"
       />
       <p class="my-6">
         Welcome to `fresh`. Try update this message in the ./routes/index.tsx
