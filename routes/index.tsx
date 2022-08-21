@@ -1,20 +1,37 @@
 /** @jsx h */
 import { h } from "preact";
-import Counter from "../islands/Counter.tsx";
+import { HandlerContext, PageProps } from "$fresh/server.ts";
+import * as djwt from "djwt";
+import { getCookies } from "$std/http/cookie.ts";
+import { key } from "../utils/hmac_key.ts";
 
-export default function Home() {
+interface Page {
+  email: string;
+}
+
+export async function handler(
+  req: Request,
+  ctx: HandlerContext,
+): Promise<Response> {
+  const jwt = getCookies(req.headers)["jwt_token"];
+  let email = "";
+  try {
+    const payload = await djwt.verify(jwt, key);
+    email = payload["email"] as string;
+  } catch (err) {
+    // Ignore
+    console.error(err);
+  }
+  return await ctx.render({ email });
+}
+
+export default function Index({ data }: PageProps<Page>) {
   return (
-    <div class="p-4 mx-auto max-w-screen-md">
-      <img
-        src="/logo.svg"
-        alt="the fresh logo: a sliced lemon dripping with juice"
-        class="h-16"
-      />
-      <p class="my-6">
-        Welcome to `fresh`. Try update this message in the ./routes/index.tsx
-        file, and refresh.
-      </p>
-      <Counter start={3} />
+    <div>
+      Welcome {data.email}
+      <div>
+        Goto <a href="/dashboard" class="text-blue-700">Dashboard</a>
+      </div>
     </div>
   );
 }

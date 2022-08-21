@@ -7,6 +7,7 @@
 import { InnerRenderFunction, RenderContext, start } from "$fresh/server.ts";
 import manifest from "./fresh.gen.ts";
 import { UnoCSS } from "./utils/unocss.ts";
+import { DB } from "./database/db.ts";
 
 const unoCSS = new UnoCSS();
 
@@ -20,5 +21,9 @@ async function render(ctx: RenderContext, render: InnerRenderFunction) {
     ...(ctx.styles ?? []),
   );
 }
+
+const db = DB.getInstance();
+const sql = await db.selectFrom("user").selectAll().execute();
+console.log(sql);
 
 await start(manifest, { render });
