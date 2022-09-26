@@ -1,6 +1,3 @@
-/** @jsx h */
-import { h } from "preact";
-
 export default function SignIn() {
   return (
     <main class="font-sans flex flex-col mx-auto w-full">

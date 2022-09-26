@@ -1,5 +1,3 @@
-/** @jsx h */
-import { h } from "preact";
 import { HandlerContext, PageProps } from "$fresh/server.ts";
 import { DB } from "../database/db.ts";
 

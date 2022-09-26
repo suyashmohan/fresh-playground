@@ -3,5 +3,9 @@
     "start": "deno run -A --watch=static/,routes/ dev.ts",
     "prod": "DENO_DEPLOYMENT_ID=\"$(git rev-parse HEAD)\" deno run -A main.ts"
   },
-  "importMap": "./import_map.json"
+  "importMap": "./import_map.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  }
 }

@@ -1,6 +1,3 @@
-/** @jsx h */
-import { h } from "preact";
-
 export default function Playground() {
   return (
     <div class="font-sans flex flex-row items-start">

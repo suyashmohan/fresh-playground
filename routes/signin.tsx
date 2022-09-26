@@ -1,5 +1,3 @@
-/** @jsx h */
-import { h } from "preact";
 import { HandlerContext, PageProps } from "$fresh/server.ts";
 import { setCookie } from "$std/http/cookie.ts";
 import * as djwt from "djwt";
