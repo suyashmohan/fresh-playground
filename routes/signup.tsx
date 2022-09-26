@@ -1,47 +1,47 @@
-import { HandlerContext, PageProps } from "$fresh/server.ts";
+import { HandlerContext, Handlers, PageProps } from "$fresh/server.ts";
 import { DB } from "../database/db.ts";
 
-export async function handler(
-  req: Request,
-  ctx: HandlerContext,
-): Promise<Response> {
-  const errors: string[] = [];
-  if (req.method === "POST" && req.body) {
+export const handler: Handlers = {
+  async POST(req: Request, ctx: HandlerContext) {
+    if (!req.body) {
+      return await ctx.render([]);
+    }
+
+    const errors: string[] = [];
     const formData = await req.formData();
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirm-password") as string;
 
-    if (!email || email.length == 0) {
+    if (!email || email.trim().length == 0) {
       errors.push("Email not provided");
     }
-    if (!password || password.length == 0) {
+    if (!password || password.trim().length == 0) {
       errors.push("Password not provided");
     }
-    if (!confirmPassword || confirmPassword.length == 0) {
+    if (!confirmPassword || confirmPassword.trim().length == 0) {
       errors.push("Confirm Password not provided");
     }
     if (password !== confirmPassword) {
       errors.push("Passwords does not match");
     }
 
-    if (errors.length === 0) {
-      const db = DB.getInstance();
-      await db.insertInto("user").values({
-        email,
-        password,
-      }).execute();
+    if (errors.length > 0) {
+      return await ctx.render(errors);
     }
 
-    if (errors.length === 0) {
-      return new Response("", {
-        status: 303,
-        headers: { Location: "/signin" },
-      });
-    }
-  }
-  return await ctx.render(errors);
-}
+    const db = DB.getInstance();
+    await db.insertInto("user").values({
+      email,
+      password,
+    }).execute();
+
+    return new Response("", {
+      status: 303,
+      headers: { Location: "/signin" },
+    });
+  },
+};
 
 export default function SignUp({ data }: PageProps<string[]>) {
   return (
@@ -53,7 +53,7 @@ export default function SignUp({ data }: PageProps<string[]>) {
         method="POST"
         class="flex flex-col flex-gap-4 bg-white w-full max-w-md p-2 rounded-md border-1 border-gray-300"
       >
-        <ul>{data.map((e) => <li class="text-red-700">{e}</li>)}</ul>
+        {data && <ul>{data.map((e) => <li class="text-red-700">{e}</li>)}</ul>}
         <div class="flex flex-col ">
           <label for="email">Email</label>
           <input
