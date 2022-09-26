@@ -1,63 +1,57 @@
-import { HandlerContext, PageProps } from "$fresh/server.ts";
+import { HandlerContext, Handlers, PageProps } from "$fresh/server.ts";
 import { setCookie } from "$std/http/cookie.ts";
 import * as djwt from "djwt";
 import { DB } from "../database/db.ts";
 import { header, key } from "../utils/hmac_key.ts";
 
-export async function handler(
-  req: Request,
-  ctx: HandlerContext,
-): Promise<Response> {
-  const errors: string[] = [];
-  if (req.method === "POST" && req.body) {
+export const handler: Handlers = {
+  async POST(req: Request, ctx: HandlerContext) {
+    if (!req.body) {
+      return await ctx.render([]);
+    }
+
+    const errors: string[] = [];
     const formData = await req.formData();
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    if (!email || email.length == 0) {
+    if (!email || email.trim().length == 0) {
       errors.push("Email not provided");
     }
-    if (!password || password.length == 0) {
+    if (!password || password.trim().length == 0) {
       errors.push("Password not provided");
     }
-
-    if (errors.length === 0) {
-      const db = DB.getInstance();
-      const sql = await db.selectFrom("user").selectAll().where(
-        "user.email",
-        "=",
-        email,
-      ).executeTakeFirst();
-      if (!sql) {
-        errors.push("Record not found");
-      }
-
-      const payload: djwt.Payload = {
-        email,
-      };
-      const jwt = await djwt.create(header, payload, key);
-      const response = new Response("", {
-        status: 303,
-        headers: { Location: "/" },
-      });
-      setCookie(response.headers, {
-        name: "jwt_token",
-        value: jwt,
-        maxAge: 60 * 60 * 24,
-        httpOnly: true,
-      });
-      return response;
+    if (errors.length > 0) {
+      return await ctx.render(errors);
     }
 
-    if (errors.length === 0) {
-      return new Response("", {
-        status: 303,
-        headers: { Location: "/signin" },
-      });
+    const db = DB.getInstance();
+    const sql = await db.selectFrom("user").selectAll().where(
+      "user.email",
+      "=",
+      email,
+    ).executeTakeFirst();
+    if (!sql) {
+      return await ctx.render(["Record not found"]);
     }
-  }
-  return await ctx.render(errors);
-}
+
+    const payload: djwt.Payload = {
+      email,
+    };
+    const jwt = await djwt.create(header, payload, key);
+    const response = new Response("", {
+      status: 303,
+      headers: { Location: "/" },
+    });
+    setCookie(response.headers, {
+      name: "jwt_token",
+      value: jwt,
+      maxAge: 60 * 60 * 24,
+      httpOnly: true,
+    });
+    return response;
+  },
+};
 
 export default function SignIn({ data }: PageProps<string[]>) {
   return (
@@ -69,7 +63,7 @@ export default function SignIn({ data }: PageProps<string[]>) {
         method="POST"
         class="flex flex-col flex-gap-4 bg-white w-full max-w-md p-2 rounded-md border-1 border-gray-300"
       >
-        <ul>{data.map((e) => <li class="text-red-700">{e}</li>)}</ul>
+        {data && <ul>{data.map((e) => <li class="text-red-700">{e}</li>)}</ul>}
         <div class="flex flex-col ">
           <label for="email">Email</label>
           <input
