@@ -43,7 +43,7 @@ export async function handler(
   return await ctx.render(errors);
 }
 
-export default function SignIn({ data }: PageProps<string[]>) {
+export default function SignUp({ data }: PageProps<string[]>) {
   return (
     <div class="font-sans bg-gray-100 h-screen w-screen flex flex-col items-center justify-center">
       <div class="text-2xl pb-4 flex flex-col items-center">

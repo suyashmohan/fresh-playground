@@ -1,4 +1,4 @@
-export default function SignIn() {
+export default function NotFound() {
   return (
     <main class="font-sans flex flex-col mx-auto w-full">
       <div class="text-center py-10 px-4">
