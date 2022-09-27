@@ -22,14 +22,14 @@ export async function handler(
 
 export default function Index({ data }: PageProps<Page>) {
   return (
-    <div>
-      <header class="flex flex-row items-center justify-between p-2 bg-gray-100 border-b-1 border-gray-300">
+    <div class="font-sans">
+      <header class="flex flex-row items-center justify-between p-3 bg-gray-100 border-b-1 border-gray-300">
         <div class="text-xl">Welcome {data.email}</div>
         <nav class="flex flex-row flex-gap-2 items-center">
           <a href="./signup">Sign Up</a>
           <a
             href="./signin"
-            class="bg-indigo-900 text-gray-200 px-2 py-1 rounded-md"
+            class="bg-blue-700 text-gray-200 px-4 py-2 rounded-md"
           >
             Login
           </a>

@@ -10,7 +10,7 @@ const defaultUnoConfig: UserConfig = {
       provider: "google", // default provider
       fonts: {
         // these will extend the default theme
-        sans: "Raleway",
+        sans: "Nunito",
         mono: "Fira Code",
       },
     }) as unknown as Preset,
